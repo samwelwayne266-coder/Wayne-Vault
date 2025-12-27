@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WAYNE-VAULT // OS-INTERFACE</title>
+    <style>
+        :root { --glow: #00ff41; --dim: #003300; --bg: #050505; }
+        body { background: var(--bg); color: var(--glow); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        
+        /* CRT Scanline Effect */
+        body::after { content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 3px, 3px 100%; pointer-events: none; z-index: 10; }
+
+        #gatekeeper, #vault { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
+        #vault { display: none; padding: 20px; }
+
+        .terminal-box { border: 1px solid var(--glow); padding: 20px; background: rgba(0, 255, 65, 0.05); box-shadow: 0 0 15px var(--dim); width: 80%; max-width: 900px; }
+        input { background: transparent; border: none; color: var(--glow); font-family: inherit; font-size: 1.1rem; outline: none; width: 100%; }
+        
+        #telemetry { position: fixed; top: 10px; left: 10px; border: 1px solid var(--glow); padding: 10px; font-size: 0.7rem; background: rgba(0,0,0,0.9); }
+        .file-list { height: 200px; overflow-y: auto; margin: 10px 0; border-top: 1px dashed var(--glow); }
+        .btn { background: var(--glow); color: black; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin: 5px; }
+        .btn:hover { background: white; box-shadow: 0 0 10px white; }
+    </style>
+</head>
+<body>
+
+    <div id="telemetry">
+        <div>[SYSTEM_OS]: CORE_v2.5</div>
+        <div>[CPU_LOAD]: <span id="cpu">0.00</span>%</div>
+        <div>[MEM_USED]: <span id="mem">0.00</span>%</div>
+        <div>[UP_TIME]: <span id="uptime">0.00</span>H</div>
+    </div>
+
+    <div id="gatekeeper">
+        <h1 style="text-shadow: 0 0 10px var(--glow);">ACCESS RESTRICTED</h1>
+        <div class="terminal-box">
+            <span>WAYNE@CORE:~$ sudo auth --key</span>
+            <input type="password" id="passKey" autofocus onkeydown="if(event.key==='Enter') verify()">
+        </div>
+    </div>
+
+    <div id="vault">
+        <div class="terminal-box">
+            <div id="console-out" style="height: 150px; overflow-y: auto; color: #888; font-size: 0.9rem;">
+                > SYSTEM_BOOT_COMPLETE...<br>> ENCRYPTION_LAYER_ACTIVE...
+            </div>
+            <div style="display: flex;">
+                <span>WAYNE@CORE:~$</span>
+                <input type="text" id="cmdInput" onkeydown="if(event.key==='Enter') execCmd()">
+            </div>
+        </div>
+
+        <div class="terminal-box" style="margin-top: 20px;">
+            <h3>[VAULT_CONTENTS]</h3>
+            <div id="file-list" class="file-list"></div>
+            <button class="btn" onclick="document.getElementById('fUp').click()">PUSH_DATA</button>
+            <input type="file" id="fUp" style="display:none" onchange="upload()">
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        function verify() {
+            const key = document.getElementById('passKey').value;
+            // Secret Code WAYNE (Salted Base64)
+            if (btoa("CORE_SYS_" + key.toUpperCase()) === "Q09SRV9TWVNfV0FZTkU=") {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.getElementById('vault').style.display = 'flex';
+            } else { location.reload(); }
+        }
+
+        function execCmd() {
+            const input = document.getElementById('cmdInput');
+            socket.emit('execute-command', input.value);
+            document.getElementById('console-out').innerHTML += `<br><span style="color:#fff">WAYNE@CORE:~$ ${input.value}</span>`;
+            input.value = "";
+        }
+
+        socket.on('terminal-response', r => {
+            document.getElementById('console-out').innerHTML += `<br>${r}`;
+            document.getElementById('console-out').scrollTop = 9999;
+        });
+
+        socket.on('sys-telemetry', d => {
+            document.getElementById('cpu').innerText = d.cpu;
+            document.getElementById('mem').innerText = d.mem;
+            document.getElementById('uptime').innerText = d.uptime;
+        });
+
+        socket.on('vault-contents', files => {
+            const list = document.getElementById('file-list');
+            list.innerHTML = files.map(f => `
+                <div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #111;">
+                    <span>> ${f}</span>
+                    <div>
+                        <a href="/download/${f}" style="color:var(--glow)">[PULL]</a>
+                        <span onclick="shred('${f}')" style="color:red; cursor:pointer; margin-left:10px;">[SHRED]</span>
+                    </div>
+                </div>
+            `).join('');
+        });
+
+        function shred(f) { fetch(`/shred/${f}`, {method:'POST'}); }
+        function upload() {
+            const fd = new FormData();
+            fd.append('file', document.getElementById('fUp').files[0]);
+            fetch('/upload', {method:'POST', body:fd});
+        }
+    </script>
+</body>
+</html>
