@@ -32,9 +32,9 @@
    ```
 2. Initialize the Vault:
 
-```bash
-npm start
-```
+   ```bash
+   npm start
+   ```
 
 Establish Connection: Once the terminal says WAYNE_CORE // SYSTEM_READY, you can access the vault:
 
@@ -46,7 +46,7 @@ On Other Devices (Phones/Tablets): 1. Find your Local IP (Type ipconfig in CMD o
 **🛡️ ACCESS KEYS**
 The system is protected by a Gatekeeper. You must enter the identity-verified code to bypass the encryption:
 
-SECRET_CODE: WAYNE
+SECRET_CODE: **```WAYNE```**
 
 **💎 FEATURES**
 🛠️ Terminal UI: Matrix-style scanline interface.
@@ -57,4 +57,4 @@ SECRET_CODE: WAYNE
 
 🚀 Universal Access: Fully responsive for mobile and desktop browsers.
 
-Copyright © 2025 WAYNE CORE Unauthorized access to the Wayne Vault is prohibited.
+**Copyright © 2025 WAYNE CORE Unauthorized access to the Wayne Vault is prohibited.**
