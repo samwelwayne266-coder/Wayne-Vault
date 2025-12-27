@@ -46,7 +46,7 @@ On Other Devices (Phones/Tablets): 1. Find your Local IP (Type ipconfig in CMD o
 **🛡️ ACCESS KEYS**
 The system is protected by a Gatekeeper. You must enter the identity-verified code to bypass the encryption:
 
-SECRET_CODE: **```WAYNE```**
+               SECRET_CODE: **```WAYNE```**
 
 **💎 FEATURES**
 🛠️ Terminal UI: Matrix-style scanline interface.
