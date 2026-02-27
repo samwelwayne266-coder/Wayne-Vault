@@ -1,4 +1,4 @@
-# 🔐 WAYNE VAULT: SECURE_OS v2.5
+# 🔐 WAYNE VAULT
 > **DEVELOPER:** [WAYNE CORE](https://github.com/samwelwayne266-coder)  
 > **PROTOCOL:** LOCAL_ENCRYPTED_STORAGE
 
