@@ -61,4 +61,4 @@ The system is protected by a Gatekeeper. You must enter the identity-verified co
 
 🚀 Universal Access: Fully responsive for mobile and desktop browsers.
 
-**Copyright © 2025 WAYNE CORE Unauthorized access to the Wayne Vault is prohibited.**
+**Copyright © 2025 WAYNE CORE**
